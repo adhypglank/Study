@@ -328,7 +328,7 @@ Workflow `.github/workflows/build_charta.yml` otomatis membangun binary untuk se
 - `ChartaRuntime-macos-arm64`
 - `ChartaRuntime-macos-x86_64`
 
-Untuk macOS, setiap job mengatur `PYINSTALLER_TARGET_ARCH` ke arsitektur runner (`arm64` atau `x86_64`).
+Untuk macOS, build arm64 berjalan di `macos-latest` dan build x86_64 berjalan di `macos-15-intel`; `PYINSTALLER_TARGET_ARCH` disetel sesuai arsitektur.
 
 ## Hak Cipta
 
