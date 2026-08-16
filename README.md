@@ -306,9 +306,9 @@ Jika kunci salah atau file dirusak, output dihasilkan kosong dan muncul pesan *"
 | `charta_protect.py unwrap <in.chrt> <out>` | Pulihkan file dari `.chrt` |
 | `charta_mt5_bridge.py` | HTTP bridge untuk MetaTrader 5 |
 
-## Build Binary Universal (Windows, Linux, macOS)
+## Build Binary Mandiri (Windows, Linux, macOS)
 
-`ChartaRuntime` dapat dibuat menjadi satu binary mandiri untuk Windows, Linux, dan macOS menggunakan PyInstaller.
+`ChartaRuntime` dapat dibuat menjadi binary mandiri untuk Windows, Linux, dan macOS menggunakan PyInstaller. Untuk macOS disediakan dua artefak: `x86_64` dan `arm64`, karena beberapa dependensi (mis. `cryptography`/`cffi`) tidak menyediakan wheel universal2.
 
 ### Lokal
 
@@ -321,13 +321,14 @@ Hasil ada di `dist/ChartaRuntime` (Linux/macOS) atau `dist/ChartaRuntime.exe` (W
 
 ### GitHub Actions
 
-Workflow `.github/workflows/build_charta.yml` otomatis membangun binary untuk ketiga platform dan mengunggah artefak:
+Workflow `.github/workflows/build_charta.yml` otomatis membangun binary untuk setiap platform:
 
 - `ChartaRuntime-ubuntu-latest`
 - `ChartaRuntime-windows-latest`
-- `ChartaRuntime-macos-latest`
+- `ChartaRuntime-macos-arm64`
+- `ChartaRuntime-macos-x86_64`
 
-Untuk macOS universal (x86_64 + arm64), workflow mengatur `PYINSTALLER_TARGET_ARCH=universal2`.
+Untuk macOS, setiap job mengatur `PYINSTALLER_TARGET_ARCH` ke arsitektur runner (`arm64` atau `x86_64`).
 
 ## Hak Cipta
 
