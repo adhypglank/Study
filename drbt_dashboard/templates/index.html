@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<title>dRBT Multi-Bot Performance</title>
+<script src="https://cdn.plot.ly/plotly-2.35.2.min.js"></script>
+<style>
+  body { background:#0e1117; color:#e6e6e6; font-family: system-ui, sans-serif; margin:0; }
+  header { padding:14px 22px; background:#161b24; display:flex; gap:24px; align-items:baseline; flex-wrap:wrap; }
+  header h1 { font-size:18px; margin:0; }
+  .pill { background:#223; border-radius:12px; padding:4px 12px; font-size:13px; }
+  .grid { display:grid; grid-template-columns: 2fr 1fr; gap:16px; padding:16px; }
+  .card { background:#161b24; border-radius:10px; padding:12px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; padding:0 16px; }
+  .bot h3 { margin:2px 0 8px; font-size:15px; }
+  .pos { color:#7fd18b } .neg { color:#ff7b72 }
+  table { width:100%; border-collapse:collapse; font-size:13px; }
+  th,td { text-align:left; padding:4px 6px; border-bottom:1px solid #222a38; }
+</style>
+</head>
+<body>
+<header>
+  <h1>dRBT Multi-Bot Performance</h1>
+  <span class="pill" id="mode">-</span>
+  <span class="pill" id="account">-</span>
+  <span class="pill" id="tick">-</span>
+  <span class="pill" id="updated">-</span>
+</header>
+<div class="cards" id="botCards"></div>
+<div class="grid">
+  <div class="card"><div id="equityChart" style="height:420px"></div></div>
+  <div class="card"><div id="barChart" style="height:420px"></div></div>
+  <div class="card" style="grid-column:1/3">
+    <h3>Posisi Terbuka</h3>
+    <table id="posTable"><thead><tr>
+      <th>Bot</th><th>Ticket</th><th>Simbol</th><th>Tipe</th><th>Lot</th><th>Harga Buka</th><th>P/L Bersih</th>
+    </tr></thead><tbody></tbody></table>
+  </div>
+</div>
+<script>
+const layoutBase = { template:'plotly_dark', paper_bgcolor:'#161b24', plot_bgcolor:'#161b24',
+                     margin:{t:40,l:50,r:20,b:40} };
+async function refresh() {
+  const r = await fetch('/api/dashboard'); const d = await r.json();
+  document.getElementById('mode').textContent = 'Mode: ' + d.mode;
+  if (d.account) document.getElementById('account').textContent =
+    `Akun ${d.account.login} @ ${d.account.server} — Balance ${d.account.balance.toFixed(2)} / Equity ${d.account.equity.toFixed(2)} ${d.account.currency}`;
+  if (d.tick) document.getElementById('tick').textContent = `${d.tick.symbol}: ${d.tick.bid} / ${d.tick.ask}`;
+  document.getElementById('updated').textContent = 'Update: ' + new Date(d.generated_at).toLocaleTimeString();
+
+  const bots = Object.keys(d.stats);
+  Plotly.react('equityChart',
+    bots.map(b => ({x:d.stats[b].curve_t, y:d.stats[b].curve_v, name:b, mode:'lines'})),
+    {...layoutBase, title:'Kurva Profit Kumulatif per Bot (30 hari)'});
+  Plotly.react('barChart',
+    [{x:bots, y:bots.map(b=>d.stats[b].net_profit), type:'bar',
+      marker:{color:bots.map(b=>d.stats[b].net_profit>=0?'#7fd18b':'#ff7b72')}}],
+    {...layoutBase, title:'Total Profit Bersih per Bot'});
+
+  const cards = document.getElementById('botCards'); cards.innerHTML='';
+  for (const b of bots) {
+    const s = d.stats[b], fl = (d.open_by_bot[b]||{}).floating ?? 0;
+    cards.insertAdjacentHTML('beforeend', `<div class="card bot"><h3>${b}</h3>
+      <div>Trades: <b>${s.trades}</b> — Win rate: <b>${s.win_rate}%</b></div>
+      <div>Profit tertutup: <b class="${s.net_profit>=0?'pos':'neg'}">${s.net_profit.toFixed(2)}</b></div>
+      <div>Floating: <b class="${fl>=0?'pos':'neg'}">${fl.toFixed(2)}</b></div></div>`);
+  }
+  const tbody = document.querySelector('#posTable tbody'); tbody.innerHTML='';
+  for (const [bot, info] of Object.entries(d.open_by_bot)) {
+    for (const p of info.positions) {
+      tbody.insertAdjacentHTML('beforeend', `<tr><td>${bot}</td><td>${p.ticket}</td><td>${p.symbol}</td>
+        <td>${p.type}</td><td>${p.lot}</td><td>${p.open_price}</td>
+        <td class="${p.net_profit>=0?'pos':'neg'}">${p.net_profit.toFixed(2)}</td></tr>`);
+    }
+  }
+}
+refresh(); setInterval(refresh, 5000);
+</script>
+</body>
+</html>
