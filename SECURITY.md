@@ -14,7 +14,7 @@ The original Python source implemented a workflow with Indonesian SPOK sentences
 |---|---|---|---|---|
 | 1 | **Fake encryption** — base64 only | Critical | `base64` encode/decode called on `.chrt` data and labelled encrypted | Replaced with **AES-GCM** authenticated encryption.  Keys come from the `CHARTA_MASTER_KEY` environment variable, 32 bytes, base64url. |
 | 2 | **Hardcoded credentials & PII** | Critical | `emails = ["daribekasi@gmail.com", "adhypglank@gmail.com", ...]` | Moved to environment variable `CHARTA_AUDIT_EMAILS` and separated by commas.  No e-mail addresses in source. |
-| 3 | **Path traversal in file paths** | High | `os.path.join(vault_path, filename)` used directly | Created `_secure_vault_path()` that resolves the vault root, rejects `.` / `..`, and verifies `os.path.commonpath()`. |
+| 3 | **Path traversal in file paths** | High | `os.path.join(vault_path, filename)` used directly | `_secure_vault_path()` now rejects any filename containing path separators (`/`, `\`) or starting with `..`, then resolves the vault root and verifies `os.path.commonpath()`. |
 | 4 | **Unsafe file modes** | Medium | Files written with default `0o644` | Vault directory created as `0o700`; output files written as `0o600`. |
 | 5 | **Insecure `eval` / `exec` / `subprocess` patterns** | Medium | The original script constructed Python source from parsed inputs and called `compile()`; `exec`/`eval` not present but runtime could be abused to execute generated Python | Compiler now emits an in-memory IR (`Instruction` dataclasses) instead of arbitrary Python source strings; no `eval`/`exec` is used.  The exporter writes deterministic Python/MQL5 text that is safe to inspect before running separately. |
 | 6 | **Hardcoded master key** | High | Variable named `CHARTA_MASTER_KEY` was set to a literal string inside the source | Removed; key must be supplied via environment at runtime.  `.env.example` lists the variable with an empty placeholder. |
@@ -27,6 +27,8 @@ The original Python source implemented a workflow with Indonesian SPOK sentences
 - `charta_runtime.py key` produced a valid 32-byte base64url key.
 - `spok-help` listed the SPOK → Sanskrit dictionary with balanced parentheses and valid Devanagari characters.
 - `compile-spok`, `inspect`, and `export` with AES-GCM succeeded against the sample `program.spok`.
+- `ChartaLocalVault` and `ChartaSPOKCompiler` save/load and `compile_and_lock`/`execute_chrt` roundtrips passed.
+- Path traversal attempts (`../../../etc/passwd`, `foo/bar`, `..\windows\system32`, `.`, `..`) were rejected by `_secure_vault_path()` with `ValueError`.
 - All Sanskrit entries in `README.md` were cross-checked against the runtime dictionaries and contain valid Devanagari code points.
 
 ## Secure Usage Reminders

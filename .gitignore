@@ -12,3 +12,7 @@ dist/
 *.exe
 *.7z
 *.egg-info
+test_outputs/
+CHARTA_TEST_PLAN.md
+.agents/
+

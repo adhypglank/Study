@@ -39,11 +39,15 @@ def _key() -> bytes:
 
 
 def _secure_vault_path(vault_path: str, filename: str, extension: str = ".chrt") -> str:
-    """Resolve a safe absolute path inside the vault and block path traversal."""
+    """Resolve a safe absolute path inside the vault and reject path traversal."""
     base = os.path.abspath(vault_path)
-    safe_name = os.path.basename(filename).replace("..", "")
-    if not safe_name or safe_name in (".", ".."):
+    if not filename or filename in (".", ".."):
         raise ValueError("Invalid filename")
+    if any(sep in filename for sep in ("/", "\\")):
+        raise ValueError(f"Filename must not contain path separators: {filename}")
+    if filename.startswith(".."):
+        raise ValueError(f"Filename must not start with parent references: {filename}")
+    safe_name = os.path.basename(filename)
     target = os.path.abspath(os.path.join(base, f"{safe_name}{extension}"))
     if os.path.commonpath([base, target]) != base:
         raise ValueError(f"Filename escapes vault directory: {filename}")
@@ -94,6 +98,12 @@ class ChartaSPOKCompiler:
             "DI_CLOUD": "मेघे (Meghe)",
         }
 
+    def _deva(self, label: str) -> str:
+        """Return the Devanagari part of a 'Devanagari (IAST)' label."""
+        if " (" in label:
+            return label.split(" (", 1)[0]
+        return label
+
     def translate_to_charta(self, spok_sentence):
         """Menerjemahkan kalimat SPOK natural menjadi format Charta Code (Devanagari + AG)"""
         words = spok_sentence.upper().split()
@@ -101,7 +111,7 @@ class ChartaSPOKCompiler:
 
         for word in words:
             if word in self.spok_dictionary:
-                translated_tokens.append(self.spok_dictionary[word])
+                translated_tokens.append(self._deva(self.spok_dictionary[word]))
             else:
                 translated_tokens.append(word)  # Pertahankan kata khusus jika tidak ada di kamus
 

@@ -40,11 +40,15 @@ def _key() -> bytes:
 
 
 def _secure_vault_path(vault_path: str, filename: str, extension: str = ".chrt") -> str:
-    """Resolve a safe absolute path inside the vault and block path traversal."""
+    """Resolve a safe absolute path inside the vault and reject path traversal."""
     base = os.path.abspath(vault_path)
-    safe_name = os.path.basename(filename).replace("..", "")
-    if not safe_name or safe_name in (".", ".."):
+    if not filename or filename in (".", ".."):
         raise ValueError("Invalid filename")
+    if any(sep in filename for sep in ("/", "\\")):
+        raise ValueError(f"Filename must not contain path separators: {filename}")
+    if filename.startswith(".."):
+        raise ValueError(f"Filename must not start with parent references: {filename}")
+    safe_name = os.path.basename(filename)
     target = os.path.abspath(os.path.join(base, f"{safe_name}{extension}"))
     if os.path.commonpath([base, target]) != base:
         raise ValueError(f"Filename escapes vault directory: {filename}")
@@ -183,18 +187,26 @@ class ChartaSPOKTranslator:
             "KE_EMAIL_PEMBUAT": "अधिप्-इमेल-दिशि (Adhyp-Email-Diśi)",
             "SECARA_AMAN": "सुरक्षितरूपेण (Surakṣitarūpeṇa)",
             "KE_DRIVE_D": "ड्राइव-ड-दिशि (Drive-D-Diśi)",
+            "DI_CLOUD": "मेघे (Meghe)",
+            "OTOMATIS": "स्वयमेव (Svayameva)",
             "FILE": "सञ्चिका (Sañcikā)",
             "DATA": "दत्तांश (Dattāṁśa)",
             "KODE": "सङ्केत (Saṅketa)",
             "PROGRAM": "प्रणाली (Praṇālī)",
         }
 
+    def _deva(self, label: str) -> str:
+        """Return the Devanagari part of a 'Devanagari (IAST)' label."""
+        if " (" in label:
+            return label.split(" (", 1)[0]
+        return label
+
     def convert(self, spok_lines):
         charta_code_lines = []
         for idx, line in enumerate(spok_lines, start=1):
             line_id = f"AG{idx}"
             tokens = line.upper().split()
-            translated = [self.dictionary.get(t, t) for t in tokens]
+            translated = [self._deva(self.dictionary.get(t, t)) for t in tokens]
             charta_code_lines.append(f"{line_id} पद {' '.join(translated)} इति")
         return "\n".join(charta_code_lines)
 
