@@ -2,11 +2,17 @@
 
 
 a = Analysis(
-    ['charta_runtime.py'],
+    ['ChartaRuntime.py'],
     pathex=[],
     binaries=[],
     datas=[],
-    hiddenimports=['cryptography.hazmat.primitives.ciphers.aead'],
+    hiddenimports=[
+        'cryptography.hazmat.primitives.ciphers.aead',
+        'charta_runtime',
+        'charta_polyglot',
+        'charta_protect',
+        'charta_mt5_bridge',
+    ],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],

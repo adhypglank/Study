@@ -73,9 +73,24 @@ AG2 पद आर-बी-टी-यन्त्र प्रबन्धयत�
 ...
 ```
 
+## ChartaRuntime — CLI Khusus Membuat & Membaca
+
+Selain `charta_runtime.py` yang memiliki banyak subperintah teknis, tersedia `ChartaRuntime.py` sebagai CLI berbahasa Indonesia untuk membuat dan membaca file Charta:
+
+```bash
+python3 ./ChartaRuntime.py kunci
+python3 ./ChartaRuntime.py buat program.spok program.cht
+python3 ./ChartaRuntime.py baca program.cht --format charta
+python3 ./ChartaRuntime.py buat sample.py sample.cht
+python3 ./ChartaRuntime.py buat strategy.mq5 strategy.cht
+python3 ./ChartaRuntime.py bungkus rahasia.py rahasia.py.chrt
+python3 ./ChartaRuntime.py buka rahasia.py.chrt rahasia.py
+python3 ./ChartaRuntime.py jembatan
+```
+
 ## Hasil Build .exe
 
-Gunakan PyInstaller dengan spesifikasi yang sudah disediakan:
+Gunakan PyInstaller dengan spesifikasi yang sudah disediakan. File `ChartaRuntime.spec` sekarang mengarah ke `ChartaRuntime.py` agar hasil `.exe` sama dengan CLI Python terbaru:
 
 ```powershell
 py -3 -m PyInstaller ChartaRuntime.spec

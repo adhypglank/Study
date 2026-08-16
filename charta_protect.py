@@ -131,6 +131,34 @@ def unwrap(input_path: Path, output_path: Path) -> None:
     print(f"[CHARTA PROTECT] Watermark owner: {manifest.get('owner')}")
 
 
+def peek(input_path: Path) -> tuple[dict, bytes]:
+    """Decrypt a protected file and return its (manifest, plaintext) without writing it."""
+    raw = input_path.read_bytes()
+    text = raw.decode("ascii")
+    parts = text.split("::", 2)
+    if len(parts) != 3 or parts[0] != "CHRT_PROTECT_V1" or parts[2] != "CHRT_PROTECT_END":
+        raise ValueError("Not a Charta protect file")
+    envelope = json.loads(base64.urlsafe_b64decode(parts[1]).decode("utf-8"))
+    if envelope.get("format") != FORMAT:
+        raise ValueError("Unsupported protect format")
+
+    nonce = base64.urlsafe_b64decode(envelope["nonce"].encode("ascii"))
+    ciphertext = base64.urlsafe_b64decode(envelope["ciphertext"].encode("ascii"))
+    associated = base64.urlsafe_b64decode(envelope["associated"].encode("ascii"))
+    manifest = json.loads(associated.decode("utf-8"))
+
+    try:
+        plaintext = AESGCM(_key()).decrypt(nonce, ciphertext, associated)
+    except Exception as exc:
+        raise RuntimeError("[CHARTA PROTECT] Invalid key or tampered file.") from exc
+
+    digest = hashlib.sha256(plaintext).hexdigest()
+    if manifest.get("sha256") and manifest["sha256"] != digest:
+        raise RuntimeError("[SECURITY BREACH] SHA256 mismatch after decryption.")
+
+    return manifest, plaintext
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Wrap/unwrap Charta protected files")
     sub = parser.add_subparsers(dest="command", required=True)
