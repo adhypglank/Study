@@ -1,0 +1,34 @@
+@echo off
+setlocal EnableDelayedExpansion
+
+cd /d "%~dp0"
+
+:: Deteksi Python 3 yang tersedia
+set "PYTHON="
+for %%P in (python python3 py) do (
+    if not defined PYTHON (
+        where %%P >nul 2>&1 && set "PYTHON=%%P"
+    )
+)
+
+if not defined PYTHON (
+    echo [ERROR] Python 3 tidak ditemukan di PATH.
+    echo Silakan install Python 3 dari https://www.python.org/downloads/
+    pause
+    exit /b 1
+)
+
+:: Saat pertama kali, jalankan installer agar .env dan dependensi tersedia
+if not exist "%~dp0.env" (
+    echo [INFO] Pertama kali menjalankan, menyiapkan kunci dan dependensi...
+    "%PYTHON%" install.py
+    if %errorlevel% neq 0 (
+        echo [ERROR] Instalasi gagal.
+        pause
+        exit /b 1
+    )
+)
+
+echo [INFO] Menjalankan Bekerja dalam Senyap...
+"%PYTHON%" launch.py --senyap src/program.spok charta_output.cht
+if %errorlevel% neq 0 pause
