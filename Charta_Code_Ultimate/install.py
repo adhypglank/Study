@@ -10,9 +10,10 @@ import subprocess
 import sys
 from pathlib import Path
 
-SRC = Path(__file__).resolve().parent / "src"
+ROOT = Path(__file__).resolve().parent
+SRC = ROOT / "src"
 REQS = SRC / "requirements.txt"
-ENV = Path(__file__).resolve().parent / ".env"
+ENV = ROOT / ".env"
 
 
 def generate_key() -> str:
@@ -57,7 +58,11 @@ def main() -> int:
             if dist_dir.exists():
                 for f in dist_dir.iterdir():
                     if f.is_file():
-                        (bin_dir / f.name).write_bytes(f.read_bytes())
+                        dest = bin_dir / f.name
+                        dest.write_bytes(f.read_bytes())
+                        # Linux/macOS: pastikan binary dapat dieksekusi
+                        if not f.name.endswith((".exe", ".cmd", ".bat")):
+                            os.chmod(dest, 0o755)
             print(f"[OK] Binary tersalin ke bin/ dan tersedia di src/dist/")
         else:
             print("[WARN] PyInstaller build gagal; source tetap bisa dipakai langsung.")
