@@ -1,0 +1,48 @@
+# -*- mode: python ; coding: utf-8 -*-
+import os
+
+
+target_arch = os.environ.get('PYINSTALLER_TARGET_ARCH') or None
+
+a = Analysis(
+    ['ChartaRuntime.py'],
+    pathex=[],
+    binaries=[],
+    datas=[],
+    hiddenimports=[
+        'cryptography.hazmat.primitives.ciphers.aead',
+        'charta_runtime',
+        'charta_polyglot',
+        'charta_nirvana',
+        'charta_protect',
+        'charta_mt5_bridge',
+    ],
+    hookspath=[],
+    hooksconfig={},
+    runtime_hooks=[],
+    excludes=[],
+    noarchive=False,
+    optimize=0,
+)
+pyz = PYZ(a.pure)
+
+exe = EXE(
+    pyz,
+    a.scripts,
+    a.binaries,
+    a.datas,
+    [],
+    name='ChartaRuntime',
+    debug=False,
+    bootloader_ignore_signals=False,
+    strip=False,
+    upx=True,
+    upx_exclude=[],
+    runtime_tmpdir=None,
+    console=True,
+    disable_windowed_traceback=False,
+    argv_emulation=False,
+    target_arch=target_arch,
+    codesign_identity=None,
+    entitlements_file=None,
+)
