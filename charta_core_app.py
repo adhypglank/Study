@@ -11,6 +11,8 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timezone
 
+import charta_runtime
+
 try:
     from cryptography.hazmat.primitives.ciphers.aead import AESGCM
 except ImportError as exc:
@@ -162,38 +164,7 @@ class ChartaLocalVault:
 
 class ChartaSPOKTranslator:
     def __init__(self):
-        self.dictionary = {
-            "SAYA": "अहम् (Aham)",
-            "KITA": "वयं (Vayam)",
-            "SISTEM": "तन्त्र (Tantra)",
-            "BOT_RBT": "आर-बी-टी-यन्त्र (RBT-Yantra)",
-            "PEMILIK": "स्वामी (Svāmī)",
-            "MEMINDAHKAN": "स्थापयति (Sthāpayati)",
-            "MENYIMPAN": "रक्षति (Rakṣati)",
-            "MENJALANKAN": "चालयति (Cālayati)",
-            "MEMBACA": "पठति (Paṭhati)",
-            "MENGAMANKAN": "गोपयति (Gopayati)",
-            "MENGELOLA": "प्रबन्धयति (Prabandhayati)",
-            "MENGHITUNG": "गणयति (Gaṇayati)",
-            "EKSEKUSI_DUAL_ENTRY": "द्वि-प्रवेश-करोति (Dvi-Praveśa-Karoti)",
-            "MENGIRIM_LAPORAN": "विवरणं-प्रेषयति (Vivaraṇaṁ-Preṣayati)",
-            "STRATEGI_AUTO_RBT": "आर-बी-टी-रणनीति (RBT-Raṇanīti)",
-            "ASET_RISIKO_75": "सम्पत्ति-७५% (Sampatti-75%)",
-            "BIAYA_INAP_16.5": "रात्रि-शुल्कम्-१६.५ (Rātri-Śulkam-16.5)",
-            "BAGI_HASIL_85_15": "लाभ-८५-१५ (Lābha-85-15)",
-            "LAPORAN_HARIAN": "दैनिक-विवरण (Dainika-Vivaraṇa)",
-            "OTOMATIS_24JAM": "अहोरात्रं-स्वयमेव (Ahorātraṁ-Svayameva)",
-            "DI_METATRADER5": "एम-क्यू-एल-मञ्चे (MQL-Mañce)",
-            "KE_EMAIL_PEMBUAT": "अधिप्-इमेल-दिशि (Adhyp-Email-Diśi)",
-            "SECARA_AMAN": "सुरक्षितरूपेण (Surakṣitarūpeṇa)",
-            "KE_DRIVE_D": "ड्राइव-ड-दिशि (Drive-D-Diśi)",
-            "DI_CLOUD": "मेघे (Meghe)",
-            "OTOMATIS": "स्वयमेव (Svayameva)",
-            "FILE": "सञ्चिका (Sañcikā)",
-            "DATA": "दत्तांश (Dattāṁśa)",
-            "KODE": "सङ्केत (Saṅketa)",
-            "PROGRAM": "प्रणाली (Praṇālī)",
-        }
+        self.dictionary = charta_runtime.SPOK_DICTIONARY
 
     def _deva(self, label: str) -> str:
         """Return the Devanagari part of a 'Devanagari (IAST)' label."""

@@ -155,6 +155,120 @@ File `ChartaRuntime.cmd` kemudian dapat dipakai untuk menjalankan `ChartaRuntime
 | `return` | प्रतिनिवर्तनम् | Pratinivartanam | Pengembalian nilai |
 | `spok` | वाक्यम् | Vākyam | Satu kalimat SPOK |
 
+## Polyglot: Menerjemahkan Banyak Bahasa ke SPOK
+
+Charta Runtime kini dapat membaca cuplikan dari banyak bahasa dan mengubahnya menjadi kalimat SPOK bahasa Indonesia, lalu ke aksara Sanskerta, lalu ke Python dan `.cht`.
+
+```bash
+python3 ./charta_runtime.py translate-code ./sample.py
+python3 ./charta_runtime.py compile-polyglot ./sample.py ./sample.cht
+python3 ./charta_runtime.py polyglot-help
+```
+
+Bahasa yang didukung minimal: **Python**, **JavaScript/TypeScript**, **C/C++**, **Java**, **Go**, **Rust**, **PHP**, **Ruby**, **SQL**, **MQL5/MQLH**, **Bash**, **HTML**, **CSS**.
+
+Contoh dari Python:
+
+```python
+print("Hello Charta")
+if x > 0:
+    for i in range(10):
+        return i
+import os
+```
+
+Akan diterjemahkan ke SPOK:
+
+```text
+SISTEM MENAMPILKAN PESAN OTOMATIS
+SISTEM JIKA KONDISI OTOMATIS
+SISTEM ULANG DAFTAR OTOMATIS
+SISTEM MENGEMBALIKAN NILAI OTOMATIS
+SISTEM MENGGUNAKAN MODUL OTOMATIS
+```
+
+Dari MQL5:
+
+```mql5
+void OnTick() {
+   OrderSend(...);
+   int ma = iMA(Symbol(), PERIOD_H1, 14, 0, MODE_SMA, PRICE_CLOSE);
+}
+```
+
+Menjadi:
+
+```text
+SISTEM SAAT_TIK PASAR OTOMATIS_24JAM
+BOT_RBT KIRIM_PESANAN ORDER DI_METATRADER5
+SISTEM BACA_PASAR SIMBOL DI_METATRADER5
+```
+
+## Menulis Ulang Kode sebagai Artikel atau Cerita
+
+Setiap `.cht` dapat diekspor sebagai prosa bahasa Indonesia.
+
+```bash
+python3 ./charta_runtime.py export ./program.cht article
+python3 ./charta_runtime.py export ./program.cht story
+```
+
+- `article` menghasilkan artikel teknis yang menjelaskan tiap langkah eksekusi.
+- `story` menghasilkan narasi fiksi singkat yang menggambarkan jalannya program seolah sebuah kisah.
+
+## Integrasi MetaTrader 5 / MQL5
+
+1. Hasilkan file `.mq5`:
+
+```bash
+python3 ./charta_runtime.py export ./program.cht mq5
+```
+
+2. Kompilasi di MetaEditor. File yang dihasilkan otomatis menyertakan `#include <charta_bridge.mqh>`.
+3. Jalankan bridge Python di lokal:
+
+```bash
+CHARTA_VAULT_PATH=./ CHARTA_MASTER_KEY=... python3 ./charta_mt5_bridge.py
+```
+
+4. Tambahkan URL `http://127.0.0.1:15555` ke **MetaTrader 5 → Tools → Options → Expert Advisors → Allow WebRequest for listed URL**.
+
+Cara kerja bridge:
+
+- MetaTrader 5 memanggil `ChartaRequest()` dari `charta_bridge.mqh`.
+- `charta_mt5_bridge.py` membaca paket `.cht` secara terenkripsi di memori dan mengembalikan sinyal SPOK sebagai JSON.
+- MQL5 menerima JSON, mengekstrak teks SPOK, lalu mengirim `ack` supaya bridge melanjutkan ke instruksi berikutnya.
+- Isi biner `.cht` tidak pernah dikirim ke MetaTrader; hanya keputusan teks SPOK yang dikirim, sehingga MetaTrader dapat membaca sinyal tanpa bisa menampilkan/membuang paket asli.
+
+## Perlindungan File dan Anti-Pencurian
+
+`charta_protect.py` membungkus file asli (kode, konfigurasi, model, dll.) menjadi file `.chrt` yang tidak dapat dibaca, disalin, atau ditampilkan tanpa `CHARTA_MASTER_KEY`.
+
+```bash
+CHARTA_MASTER_KEY=... python3 ./charta_protect.py wrap rahasia.py rahasia.py.chrt
+CHARTA_MASTER_KEY=... python3 ./charta_protect.py unwrap rahasia.py.chrt rahasia.py
+```
+
+Jika kunci salah atau file dirusak, output dihasilkan kosong dan muncul pesan *"Kunci salah atau file telah dirusak. Output dikosongkan."* — **tanpa memaksa perangkat restart atau merusak sistem**. Keamanan dibangun dari enkripsi AES-GCM + watermark `CHARTA_OWNER` + hash SHA-256, bukan dari tindakan merusak perangkat.
+
+## Daftar Perintah CLI
+
+| Perintah | Fungsi |
+|---|---|
+| `key` | Hasilkan kunci AES-256 acak |
+| `formats` | Tampilkan format dan adapter yang didaftarkan |
+| `spok-help` | Bantuan pola SPOK dan tabel Sanskerta |
+| `polyglot-help` | Daftar bahasa asing yang didukung |
+| `inspect <cht>` | Lihat metadata `.cht` tanpa dekripsi kode |
+| `compile-python <py> <cht>` | Kompilasi subset Python ke `.cht` |
+| `compile-spok <spok> <cht>` | Kompilasi SPOK bahasa Indonesia ke `.cht` |
+| `compile-polyglot <src> <cht>` | Kompilasi Python/JS/C/MQL5/SQL/HTML/CSS/... ke `.cht` |
+| `translate-code <src>` | Tampilkan SPOK hasil terjemahan tanpa kompilasi |
+| `export <cht> <charta/python/mq5/article/story>` | Ekspor `.cht` ke format pilihan |
+| `charta_protect.py wrap <in> <out.chrt>` | Bungkus file asli ke `.chrt` |
+| `charta_protect.py unwrap <in.chrt> <out>` | Pulihkan file dari `.chrt` |
+| `charta_mt5_bridge.py` | HTTP bridge untuk MetaTrader 5 |
+
 ## Hak Cipta
 
 Hak Cipta © 2026 Adi Putra (Adhyp Glank).
