@@ -260,12 +260,20 @@ def detect_language(source_path: str | Path) -> str:
     return mapping.get(ext, "python")
 
 
+# Pre-compile keyword patterns for each supported language, sorted by descending length.
+_COMPILED_PATTERNS: dict[str, list[tuple[re.Pattern, str]]] = {
+    lang: [
+        (re.compile(re.escape(kw), re.IGNORECASE), predicate)
+        for kw, predicate in sorted(table.items(), key=lambda kv: -len(kv[0]))
+    ]
+    for lang, table in POLYGLOT.items()
+}
+
+
 def _first_keyword(line: str, language: str) -> str | None:
     """Return the SPOK predicate for the first recognized keyword in a line."""
-    table = POLYGLOT.get(language, POLYGLOT["python"])
-    # Sort by length descending so longer keywords (e.g. console.log) match before shorter ones (log).
-    for keyword, predicate in sorted(table.items(), key=lambda kv: -len(kv[0])):
-        if re.search(re.escape(keyword), line, re.IGNORECASE):
+    for pattern, predicate in _COMPILED_PATTERNS.get(language, _COMPILED_PATTERNS["python"]):
+        if pattern.search(line):
             return predicate
     return None
 

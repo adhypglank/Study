@@ -16,6 +16,7 @@ import platform
 import secrets
 import sys
 from dataclasses import asdict, dataclass
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -334,6 +335,7 @@ def inspect_package(path: Path) -> None:
     print(json.dumps(manifest, indent=2, ensure_ascii=False))
 
 
+@lru_cache(maxsize=None)
 def _deva(label: str) -> str:
     """Return the Devanagari part of a 'Devanagari (IAST)' label."""
     if " (" in label:
