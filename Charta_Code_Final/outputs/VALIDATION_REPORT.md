@@ -1,8 +1,8 @@
 # Charta Code Final — Polyglot Validation Report
 
 Languages tested: 51
-SPOK dictionary entries: 74
-SPOK templates: 42
+SPOK dictionary entries: 89
+SPOK templates: 49
 
 | Language | Extension | SPOK lines | Charta lines | Valid Devanagari | Status |
 |---|---|---:|---:|:---:|:---:|
@@ -62,6 +62,6 @@ SPOK templates: 42
 
 Notes:
 - Synthetic samples contain the first 5 mapped keywords for each language.
-- SPOK output is validated to only contain tokens present in `charta_runtime.SPOK_DICTIONARY` (74 entries).
+- SPOK output is validated to only contain tokens present in `charta_runtime.SPOK_DICTIONARY` (89 entries).
 - Charta (Devanagari) output is validated to contain at least one Devanagari codepoint.
 - `.cht` packages are generated only when `CHARTA_MASTER_KEY` is set and are git-ignored by the root `.gitignore`.

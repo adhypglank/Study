@@ -13,6 +13,7 @@ a = Analysis(
         'cryptography.hazmat.primitives.ciphers.aead',
         'charta_runtime',
         'charta_polyglot',
+        'charta_nirmana',
         'charta_protect',
         'charta_mt5_bridge',
     ],

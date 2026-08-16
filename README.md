@@ -88,6 +88,28 @@ python3 ./ChartaRuntime.py buka rahasia.py.chrt rahasia.py
 python3 ./ChartaRuntime.py jembatan
 ```
 
+## Charta Nirmāṇa — Modul AI/ML
+
+`ChartaNirmāṇa` (निर्माण, “penciptaan/pembentukan”) adalah modul AI/ML yang menerjemahkan perintah SPOK ke skrip Python scikit-learn. Tambahkan ke `program.spok` atau gunakan perintah `nirmana`:
+
+```text
+SISTEM SIAPKAN_DATA DATASET OTOMATIS
+SISTEM LATIH_MODEL MODEL OTOMATIS
+SISTEM INFERENSI DATASET OTOMATIS
+SISTEM EVALUASI_MODEL MODEL OTOMATIS
+SISTEM PREDIKSI HASIL OTOMATIS
+SISTEM SIMPAN_MODEL MODEL OTOMATIS
+```
+
+```bash
+python3 ./ChartaRuntime.py nirmana examples/ai.spok ai_module.py
+# atau lewat .cht
+python3 ./ChartaRuntime.py buat examples/ai.spok ai.cht
+python3 ./ChartaRuntime.py baca ai.cht --format python
+```
+
+Hasilnya adalah skrip Python dengan `pandas`, `scikit-learn`, dan `joblib` yang dapat dijalankan di lingkungan yang memiliki dependensi tersebut. Predikat Nirmāṇa yang tersedia: `SIAPKAN_DATA`, `MUAT_MODEL`, `LATIH_MODEL`, `INFERENSI`, `PREDIKSI`, `EVALUASI_MODEL`, `SIMPAN_MODEL`.
+
 ## Hasil Build .exe
 
 Gunakan PyInstaller dengan spesifikasi yang sudah disediakan. File `ChartaRuntime.spec` sekarang mengarah ke `ChartaRuntime.py` agar hasil `.exe` sama dengan CLI Python terbaru:
