@@ -1,0 +1,14 @@
+.env
+.env.local
+*.secret
+__pycache__/
+*.pyc
+*.chrt
+*.cht
+ChartaVault/
+.ChartaVault/
+build/
+dist/
+*.exe
+*.7z
+*.egg-info
