@@ -20,7 +20,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
-import charta_nirmana
+import charta_nirvana
 import charta_polyglot
 
 try:
@@ -166,7 +166,7 @@ SPOK_DICTIONARY = {
     "APLIKASI": "अनुप्रयोग (Anuprayoga)",
     "SIMBOL": "चिह्न (Cihna)",
 
-    # Predikat Charta Nirmāṇa (AI/ML)
+    # Predikat Jayacharta AI / charta_nirvana (AI/ML)
     "MUAT_MODEL": "आरोपयति (Āropayati)",
     "LATIH_MODEL": "अभ्यस्यति (Abhyasyati)",
     "INFERENSI": "अनुमानयति (Anumānayati)",
@@ -175,7 +175,7 @@ SPOK_DICTIONARY = {
     "SIMPAN_MODEL": "संरक्षति (Saṃrakṣati)",
     "PREDIKSI": "पूर्वानुमानयति (Pūrvānumānayati)",
 
-    # Objek / keterangan Charta Nirmāṇa
+    # Objek / keterangan Jayacharta AI / charta_nirvana
     "MODEL": "प्रतिरूप (Pratirūpa)",
     "DATASET": "दत्तसङ्ग्रह (Dattasaṅgraha)",
     "FITUR": "विशेषण (Viśeṣaṇa)",
@@ -385,8 +385,8 @@ def to_python(module: ChartaModule) -> str:
     for item in module.instructions:
         if item.op == "spok":
             data = item.data
-            if charta_nirmana.is_ai_command(data["predicate"]):
-                lines.append(charta_nirmana.to_python(data))
+            if charta_nirvana.is_ai_command(data["predicate"]):
+                lines.append(charta_nirvana.to_python(data))
             else:
                 lines.append(f"# SPOK: {data['subject']} {data['predicate']} {data['object']} {' '.join(data['context'])}")
         elif item.op == "assign":

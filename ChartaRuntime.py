@@ -8,7 +8,7 @@ Perintah utama (bahasa Indonesia):
     bungkus   : membungkus file apa saja ke .chrt
     buka      : membuka .chrt menjadi file asli
     jembatan  : menjalankan HTTP bridge untuk MetaTrader 5
-    nirmana   : menerjemahkan .spok AI/ML langsung ke .py
+    nirvana   : menerjemahkan .spok AI/ML langsung ke .py
 
 Contoh:
 
@@ -107,7 +107,7 @@ def cmd_jembatan(args: Any) -> None:
     charta_mt5_bridge.main()
 
 
-def cmd_nirmana(args: Any) -> None:
+def cmd_nirvana(args: Any) -> None:
     """Terjemahkan file .spok (khusus AI/ML) langsung ke Python."""
     source: Path = args.sumber
     target: Path = args.target
@@ -115,7 +115,7 @@ def cmd_nirmana(args: Any) -> None:
     module = charta_runtime.compile_spok(text, source.stem)
     py_code = charta_runtime.to_python(module)
     target.write_text(py_code, encoding="utf-8")
-    print(f"[CHARTA NIRMĀṆA] Berhasil membuat {target}")
+    print(f"[JAYACHARTA AI] Berhasil membuat {target}")
 
 
 def main() -> None:
@@ -157,10 +157,10 @@ def main() -> None:
     jembatan = sub.add_parser("jembatan", aliases=["bridge"], help="Jalankan HTTP bridge untuk MT5")
     jembatan.set_defaults(func=cmd_jembatan)
 
-    nirmana = sub.add_parser("nirmana", aliases=["ai"], help="Terjemahkan .spok AI/ML langsung ke .py")
-    nirmana.add_argument("sumber", type=Path, help="File .spok yang berisi perintah AI/ML")
-    nirmana.add_argument("target", type=Path, help="File .py yang akan dihasilkan")
-    nirmana.set_defaults(func=cmd_nirmana)
+    nirvana = sub.add_parser("nirvana", aliases=["ai"], help="Terjemahkan .spok AI/ML langsung ke .py")
+    nirvana.add_argument("sumber", type=Path, help="File .spok yang berisi perintah AI/ML")
+    nirvana.add_argument("target", type=Path, help="File .py yang akan dihasilkan")
+    nirvana.set_defaults(func=cmd_nirvana)
 
     args = parser.parse_args()
     try:
