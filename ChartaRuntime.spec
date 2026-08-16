@@ -1,5 +1,8 @@
 # -*- mode: python ; coding: utf-8 -*-
+import os
 
+
+target_arch = os.environ.get('PYINSTALLER_TARGET_ARCH') or None
 
 a = Analysis(
     ['ChartaRuntime.py'],
@@ -38,7 +41,7 @@ exe = EXE(
     console=True,
     disable_windowed_traceback=False,
     argv_emulation=False,
-    target_arch=None,
+    target_arch=target_arch,
     codesign_identity=None,
     entitlements_file=None,
 )

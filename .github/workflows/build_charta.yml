@@ -1,0 +1,40 @@
+name: Build Charta Runtime
+
+on:
+  push:
+    branches: [main, devin/security-fixes-and-tutorial]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt pyinstaller
+
+      - name: Build ChartaRuntime
+        run: pyinstaller ChartaRuntime.spec
+        env:
+          PYINSTALLER_TARGET_ARCH: ${{ matrix.os == 'macos-latest' && 'universal2' || '' }}
+
+      - name: Upload binary artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ChartaRuntime-${{ matrix.os }}
+          path: dist/ChartaRuntime*
+          if-no-files-found: error

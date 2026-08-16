@@ -180,7 +180,7 @@ python3 ./charta_runtime.py compile-polyglot ./sample.py ./sample.cht
 python3 ./charta_runtime.py polyglot-help
 ```
 
-Bahasa yang didukung minimal: **Python**, **JavaScript/TypeScript**, **C/C++**, **Java**, **Go**, **Rust**, **PHP**, **Ruby**, **SQL**, **MQL5/MQLH**, **Bash**, **HTML**, **CSS**.
+Bahasa yang didukung: **51 bahasa pemrograman**, dari Python, JavaScript/TypeScript, C/C++, Java, Go, Rust, PHP, Ruby, SQL, MQL5, Bash, HTML, CSS, C#, Swift, Kotlin, Lua, Perl, R, Matlab, Scala, Dart, PowerShell, Batch, Objective-C, Groovy, Haskell, Lisp, F#, Fortran, COBOL, Pascal, Delphi, Ada, Erlang, Elixir, Crystal, Nim, V, Solidity, Julia, Visual Basic, Prolog, Assembly, VHDL, Verilog, Scratch, ABAP, hingga RPG.
 
 Contoh dari Python:
 
@@ -283,6 +283,29 @@ Jika kunci salah atau file dirusak, output dihasilkan kosong dan muncul pesan *"
 | `charta_protect.py wrap <in> <out.chrt>` | Bungkus file asli ke `.chrt` |
 | `charta_protect.py unwrap <in.chrt> <out>` | Pulihkan file dari `.chrt` |
 | `charta_mt5_bridge.py` | HTTP bridge untuk MetaTrader 5 |
+
+## Build Binary Universal (Windows, Linux, macOS)
+
+`ChartaRuntime` dapat dibuat menjadi satu binary mandiri untuk Windows, Linux, dan macOS menggunakan PyInstaller.
+
+### Lokal
+
+```bash
+pip install pyinstaller
+python3 build.py
+```
+
+Hasil ada di `dist/ChartaRuntime` (Linux/macOS) atau `dist/ChartaRuntime.exe` (Windows).
+
+### GitHub Actions
+
+Workflow `.github/workflows/build_charta.yml` otomatis membangun binary untuk ketiga platform dan mengunggah artefak:
+
+- `ChartaRuntime-ubuntu-latest`
+- `ChartaRuntime-windows-latest`
+- `ChartaRuntime-macos-latest`
+
+Untuk macOS universal (x86_64 + arm64), workflow mengatur `PYINSTALLER_TARGET_ARCH=universal2`.
 
 ## Hak Cipta
 
